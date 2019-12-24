@@ -1,21 +1,25 @@
-package br.com.pattern.commons.interfaces;
+package br.com.pattern.commons.abstracts;
 
 import br.com.pattern.commons.concretes.ObjectPool;
 import br.com.pattern.commons.concretes.ValidatorObject;
+import br.com.pattern.commons.interfaces.Initializable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public abstract class Validator<T, K extends ValidatorObject> implements Initializable {
 
-    private List<InnerValidator> innerValidators;
+    private List<InnerGenericValidator> innerGenericValidators;
     private List<FieldValidator<T, K>> fieldValidators;
+    private List<InnerValidator> innerValidators;
 
     public Validator() {
-        this.innerValidators = new ArrayList<>();
+        this.innerGenericValidators = new ArrayList<>();
         this.fieldValidators = new ArrayList<>();
+        this.innerValidators = new ArrayList<>();
         this.initialize();
     }
 
@@ -29,40 +33,73 @@ public abstract class Validator<T, K extends ValidatorObject> implements Initial
 
     public boolean validate(T object, K validatorObject) {
         var result = new AtomicBoolean(true);
-        fieldValidators.forEach(fieldValidator -> {
-            result.set(result.get() & fieldValidator.validate(object, validatorObject));
-        });
-        innerValidators.forEach(innerValidator -> {
-            result.set(result.get() & innerValidator.validateObjectFrom(object, validatorObject));
-        });
+        innerGenericValidators.forEach(innerGenericValidator -> result.set(result.get() & innerGenericValidator.validateFieldValueFromObject(object, validatorObject)));
+        fieldValidators.forEach(fieldValidator -> result.set(result.get() & fieldValidator.validate(object, validatorObject)));
+        innerValidators.forEach(innerValidator -> result.set(result.get() & innerValidator.validateInnerObjectFrom(object, validatorObject)));
         return result.get();
-    }
-
-    public <P> InnerValidator<P> addInnerEntityProvider(Function<T, P> innerEntitySupplier) {
-        var aux = new InnerValidator<P>(innerEntitySupplier);
-        innerValidators.add(aux);
-        return aux;
     }
 
     public void addFieldValidator(FieldValidator<T, K> fieldValidator) {
         fieldValidators.add(fieldValidator);
     }
 
+    public <P> InnerValidator<P> addInnerValidator(Validator<P, K> validator) {
+        var innerValidator = new InnerValidator<>(validator);
+        innerValidators.add(innerValidator);
+        return innerValidator;
+    }
+
+    public <P> InnerGenericValidator<P> addGenericValidator(GenericValidator<P> genericValidator) {
+        var innerGenericValidator = new InnerGenericValidator<>(genericValidator);
+        this.innerGenericValidators.add(innerGenericValidator);
+        return innerGenericValidator;
+    }
+
     public class InnerValidator<U> {
 
-        private Function<T, U> object;
-        private Validator<U, K> validator;
+        private Function<T, U> innerObjectSupplier;
+        private Validator<U, K> innerValidator;
 
-        public InnerValidator(Function<T, U> object) {
-            this.object = object;
+        InnerValidator(Validator<U, K> validator) {
+            this.innerValidator = validator;
         }
 
-        public void using(Validator<U, K> validator) {
-            this.validator = validator;
+        public void using(Function<T, U> innerObjectSupplier) {
+            this.innerObjectSupplier = innerObjectSupplier;
         }
 
-        public boolean validateObjectFrom(T anyEntity, K validatorObject) {
-            return validator.validate(object.apply(anyEntity), validatorObject);
+        boolean validateInnerObjectFrom(T object, K validatorObject) {
+            return innerValidator.validate(innerObjectSupplier.apply(object), validatorObject);
+        }
+
+    }
+
+    public class InnerGenericValidator<U> {
+
+        private GenericValidator<U> genericValidator;
+        private Function<T, U> fieldValueSupplier;
+        private Consumer<K> failMessageSetter;
+
+        InnerGenericValidator(GenericValidator<U> genericValidator) {
+            this.genericValidator = genericValidator;
+        }
+
+        public InnerGenericValidator<U> using(Function<T, U> fieldValueSupplier) {
+            this.fieldValueSupplier = fieldValueSupplier;
+            return this;
+        }
+
+        public void addingFailMessage(Consumer<K> failMessageSetter) {
+            this.failMessageSetter = failMessageSetter;
+        }
+
+        boolean validateFieldValueFromObject(T object, K validatorObject) {
+            if (!this.genericValidator.validate(fieldValueSupplier.apply(object))) {
+                this.failMessageSetter.accept(validatorObject);
+                return false;
+            } else {
+                return true;
+            }
         }
 
     }

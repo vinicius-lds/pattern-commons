@@ -1,4 +1,4 @@
-package br.com.pattern.commons.abstracts;
+package br.com.pattern.commons.concretes;
 
 import br.com.pattern.commons.interfaces.PoolObject;
 

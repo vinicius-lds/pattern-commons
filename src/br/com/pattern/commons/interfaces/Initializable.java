@@ -1,4 +1,7 @@
 package br.com.pattern.commons.interfaces;
 
-public interface Initialiazable {
+public interface Initializable {
+
+    void initialize();
+
 }
