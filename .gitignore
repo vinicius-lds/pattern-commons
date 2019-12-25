@@ -1,11 +1,20 @@
 ### IntelliJ IDEA ###
-pattern-commons/.idea
-pattern-commons/*.iws
-pattern-commons/*.iml
-pattern-commons/*.ipr
+pattern-commons/pattern-commons/.idea
+pattern-commons/pattern-commons/*.iws
+pattern-commons/pattern-commons/*.iml
+pattern-commons/pattern-commons/*.ipr
+
+pattern-commons/demo/.idea
+pattern-commons/demo/*.iws
+pattern-commons/demo/*.iml
+pattern-commons/demo/*.ipr
 
 ### Build ###
-pattern-commons/out/*
+pattern-commons/pattern-commons/out/*
+pattern-commons/pattern-commons/target/*
+
+pattern-commons/demo/out/*
+pattern-commons/demo/target/*
 
 ### IntelliJ IDEA ###
 old/.idea
@@ -15,3 +24,4 @@ old/*.ipr
 
 ### Build ###
 old/out/*
+old/target/*
