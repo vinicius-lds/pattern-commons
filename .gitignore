@@ -16,6 +16,11 @@ pattern-commons/pattern-commons/target/*
 pattern-commons/demo/out/*
 pattern-commons/demo/target/*
 
+### Maven ###
+pattern-commons/pattern-commons/.mvn
+pattern-commons/pattern-commons/mvnw
+pattern-commons/pattern-commons/mvnw.cmd
+
 ### IntelliJ IDEA ###
 old/.idea
 old/*.iws
@@ -25,3 +30,9 @@ old/*.ipr
 ### Build ###
 old/out/*
 old/target/*
+
+
+### Maven ###
+old/pattern-commons/.mvn
+old/pattern-commons/mvnw
+old/pattern-commons/mvnw.cmd

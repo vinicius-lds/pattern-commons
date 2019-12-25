@@ -1,7 +1,10 @@
 package br.com.patterncommons.abstracts;
 
-import org.springframework.beans.factory.BeanNameAware;
+import javax.annotation.PostConstruct;
 
-public abstract class GenericValidator<T> implements BeanNameAware {
+public abstract class GenericValidator<T> {
     public abstract boolean validate(T object);
+
+    @PostConstruct
+    public abstract void initialize();
 }

@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component;
 public class EmployeeValidator extends Validator<Employee, ValidatorObject> {
 
     @Override
+    public void initialize() {
+    }
+
+    @Override
     public boolean validate(Employee employee) {
         return validatorObjectPool.with(validatorObject -> {
             var result = validate(employee, validatorObject);
@@ -17,7 +21,4 @@ public class EmployeeValidator extends Validator<Employee, ValidatorObject> {
         });
     }
 
-    @Override
-    public void setBeanName(String s) {
-    }
 }

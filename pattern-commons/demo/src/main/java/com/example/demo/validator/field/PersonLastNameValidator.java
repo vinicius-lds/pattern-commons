@@ -24,7 +24,8 @@ public class PersonLastNameValidator extends FieldValidator<Person, ValidatorObj
     }
 
     @Override
-    public void setBeanName(String s) {
+    public void initialize() {
         personValidator.addFieldValidator(this);
     }
+
 }

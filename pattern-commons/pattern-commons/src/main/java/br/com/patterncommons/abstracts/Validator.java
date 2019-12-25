@@ -2,16 +2,16 @@ package br.com.patterncommons.abstracts;
 
 import br.com.patterncommons.concretes.ObjectPool;
 import br.com.patterncommons.concretes.ValidatorObject;
-import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public abstract class Validator<T, K extends ValidatorObject> implements BeanNameAware {
+public abstract class Validator<T, K extends ValidatorObject> {
 
     @Autowired
     protected ObjectPool<K> validatorObjectPool;
@@ -27,6 +27,9 @@ public abstract class Validator<T, K extends ValidatorObject> implements BeanNam
         this.fieldValidators = new ArrayList<>();
         this.innerValidators = new ArrayList<>();
     }
+
+    @PostConstruct
+    public abstract void initialize();
 
     public boolean validate(T object) {
         return validatorObjectPool.with(validatorObject -> {

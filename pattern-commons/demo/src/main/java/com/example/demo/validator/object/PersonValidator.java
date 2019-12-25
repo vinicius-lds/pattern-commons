@@ -14,7 +14,7 @@ public class PersonValidator extends Validator<Person, ValidatorObject> {
     private EmployeeValidator employeeValidator;
 
     @Override
-    public void setBeanName(String s) {
+    public void initialize() {
         employeeValidator.addInnerValidator(this).using(Employee::getPerson);
     }
 }

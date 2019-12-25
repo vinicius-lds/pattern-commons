@@ -14,7 +14,7 @@ public class AddressValidator extends Validator<Address, ValidatorObject> {
     private PersonValidator personValidator;
 
     @Override
-    public void setBeanName(String s) {
+    public void initialize() {
         personValidator.addInnerValidator(this).using(Person::getAddress);
     }
 }

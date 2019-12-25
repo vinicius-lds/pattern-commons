@@ -28,7 +28,7 @@ public class NotNullValidator extends GenericValidator<Object> {
     }
 
     @Override
-    public void setBeanName(String s) {
+    public void initialize() {
         employeeValidator.addGenericValidator(this)
                 .using(Employee::getEmployeeId)
                 .addingFailMessage((fieldValue, validatorObject) -> validatorObject.addErrorMessage("EmployeeId não pode ser nulo."));
@@ -40,6 +40,6 @@ public class NotNullValidator extends GenericValidator<Object> {
         addressValidator.addGenericValidator(this)
                 .using(Address::getStreetName)
                 .addingFailMessage((fieldValue, validatorObject) -> validatorObject.addErrorMessage("StreetName não poder ser nulo."));
-
     }
+
 }
