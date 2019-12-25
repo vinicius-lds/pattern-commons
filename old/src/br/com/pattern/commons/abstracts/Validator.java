@@ -94,11 +94,11 @@ public abstract class Validator<T, K extends ValidatorObject> implements Initial
         }
 
         boolean validateFieldValueFromObject(T object, K validatorObject) {
-            if (!this.genericValidator.validate(fieldValueSupplier.apply(object))) {
+            if (this.genericValidator.validate(fieldValueSupplier.apply(object))) {
+                return true;
+            } else {
                 this.failMessageSetter.accept(validatorObject);
                 return false;
-            } else {
-                return true;
             }
         }
 

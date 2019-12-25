@@ -1,8 +1,17 @@
 ### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+pattern-commons/.idea
+pattern-commons/*.iws
+pattern-commons/*.iml
+pattern-commons/*.ipr
 
 ### Build ###
-out/*
+pattern-commons/out/*
+
+### IntelliJ IDEA ###
+old/.idea
+old/*.iws
+old/*.iml
+old/*.ipr
+
+### Build ###
+old/out/*
