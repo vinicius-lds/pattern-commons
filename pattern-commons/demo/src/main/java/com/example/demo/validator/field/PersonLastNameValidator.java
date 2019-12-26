@@ -1,7 +1,7 @@
 package com.example.demo.validator.field;
 
-import br.com.patterncommons.abstracts.FieldValidator;
-import br.com.patterncommons.concretes.validator.ValidatorObject;
+import br.com.patterncommons.validationapi.FieldValidator;
+import br.com.patterncommons.validationapi.ValidatorObject;
 import com.example.demo.model.Person;
 import com.example.demo.validator.object.PersonValidator;
 import org.springframework.beans.factory.annotation.Autowired;

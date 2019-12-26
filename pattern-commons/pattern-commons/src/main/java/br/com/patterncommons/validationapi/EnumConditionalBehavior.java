@@ -1,4 +1,4 @@
-package br.com.patterncommons.concretes.validator;
+package br.com.patterncommons.validationapi;
 
 interface EnumConditionalBehavior<T> {
 

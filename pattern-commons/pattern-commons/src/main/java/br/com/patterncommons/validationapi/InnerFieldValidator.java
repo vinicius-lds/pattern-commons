@@ -1,6 +1,4 @@
-package br.com.patterncommons.concretes.validator;
-
-import br.com.patterncommons.abstracts.FieldValidator;
+package br.com.patterncommons.validationapi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +9,7 @@ public class InnerFieldValidator<T, K extends ValidatorObject> implements EnumCo
     private FieldValidator<T, K> fieldValidator;
     private List<EnumConditional<T, ? extends EnumConditionalBehavior<T>>> enumConditionals;
 
-    public InnerFieldValidator(FieldValidator<T, K> fieldValidator) {
+    InnerFieldValidator(FieldValidator<T, K> fieldValidator) {
         this.fieldValidator = fieldValidator;
     }
 

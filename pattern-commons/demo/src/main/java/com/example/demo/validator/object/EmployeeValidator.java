@@ -1,7 +1,7 @@
 package com.example.demo.validator.object;
 
-import br.com.patterncommons.abstracts.Validator;
-import br.com.patterncommons.concretes.validator.ValidatorObject;
+import br.com.patterncommons.validationapi.Validator;
+import br.com.patterncommons.validationapi.ValidatorObject;
 import com.example.demo.model.Employee;
 import org.springframework.stereotype.Component;
 

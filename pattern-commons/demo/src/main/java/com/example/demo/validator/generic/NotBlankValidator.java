@@ -1,6 +1,6 @@
 package com.example.demo.validator.generic;
 
-import br.com.patterncommons.abstracts.GenericValidator;
+import br.com.patterncommons.validationapi.GenericValidator;
 import com.example.demo.model.Address;
 import com.example.demo.model.Employee;
 import com.example.demo.model.Person;

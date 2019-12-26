@@ -1,6 +1,4 @@
-package br.com.patterncommons.concretes.validator;
-
-import br.com.patterncommons.abstracts.Validator;
+package br.com.patterncommons.validationapi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +11,7 @@ public class InnerValidator<T, K extends ValidatorObject, U> implements EnumCond
     private NullArgumentOnSupplierFunctionRule nullArgumentOnSupplierFunctionRule;
     private List<EnumConditional<T, ? extends EnumConditionalBehavior<T>>> enumConditionals;
 
-    public InnerValidator(Validator<U, K> validator) {
+    InnerValidator(Validator<U, K> validator) {
         this.nullArgumentOnSupplierFunctionRule = NullArgumentOnSupplierFunctionRule.ACCEPT;
         this.innerValidator = validator;
     }

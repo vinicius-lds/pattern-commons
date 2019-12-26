@@ -1,6 +1,5 @@
-package br.com.patterncommons.concretes.validator;
+package br.com.patterncommons.validationapi;
 
-import br.com.patterncommons.abstracts.GenericValidator;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ public class InnerGenericValidator<T, K extends ValidatorObject, U> implements E
     private NullArgumentOnSupplierFunctionRule nullArgumentOnSupplierFunctionRule = NullArgumentOnSupplierFunctionRule.ACCEPT;
     private List<EnumConditional<T, ? extends EnumConditionalBehavior<T>>> enumConditionals;
 
-    public InnerGenericValidator(GenericValidator<U> genericValidator) {
+    InnerGenericValidator(GenericValidator<U> genericValidator) {
         this.genericValidator = genericValidator;
     }
 
@@ -29,8 +28,9 @@ public class InnerGenericValidator<T, K extends ValidatorObject, U> implements E
         return this;
     }
 
-    public void addingFailMessage(TriConsumer<T, U, K> failMessageSetter) {
+    public InnerGenericValidator<T, K, U> addingFailMessage(TriConsumer<T, U, K> failMessageSetter) {
         this.failMessageSetter = failMessageSetter;
+        return this;
     }
 
     public boolean validateFieldValueFromObject(T object, K validatorObject) {

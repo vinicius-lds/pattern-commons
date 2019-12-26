@@ -1,6 +1,6 @@
 package com.example.demo.validator.generic;
 
-import br.com.patterncommons.abstracts.GenericValidator;
+import br.com.patterncommons.validationapi.GenericValidator;
 import com.example.demo.model.Person;
 import com.example.demo.validator.object.PersonValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,7 @@ public class NotNullValidator extends GenericValidator<Object> {
     public void initialize() {
         personValidator.addGenericValidator(this)
                 .using(Person::getBirthday)
+
                 .addingFailMessage((person, birthday, validatorObjectCustom) -> validatorObjectCustom.addErrorMessage("Birthday não pode ser nulo."));
     }
 
