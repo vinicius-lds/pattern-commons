@@ -1,7 +1,7 @@
 package com.example.demo.validator.object;
 
 import br.com.patterncommons.abstracts.Validator;
-import br.com.patterncommons.concretes.ValidatorObject;
+import br.com.patterncommons.concretes.validator.ValidatorObject;
 import com.example.demo.model.Employee;
 import com.example.demo.model.Person;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +15,6 @@ public class PersonValidator extends Validator<Person, ValidatorObject> {
 
     @Override
     public void initialize() {
-        employeeValidator.addInnerValidator(this).using(Employee::getPerson);
+        employeeValidator.addValidator(this).using(Employee::getPerson);
     }
 }

@@ -1,4 +1,4 @@
-package br.com.patterncommons.concretes;
+package br.com.patterncommons.concretes.validator;
 
 import br.com.patterncommons.interfaces.PoolObject;
 import org.apache.commons.lang3.StringUtils;
@@ -9,12 +9,14 @@ import java.util.List;
 
 public class ValidatorObject implements PoolObject {
 
+    private boolean valid;
     private List<String> errors;
     private List<String> warnings;
 
     public ValidatorObject() {
-        errors = new ArrayList<>();
-        warnings = new ArrayList<>();
+        this.valid = true;
+        this.errors = new ArrayList<>();
+        this.warnings = new ArrayList<>();
     }
 
     public void addErrorMessage(String error, String... errors) {
@@ -28,7 +30,15 @@ public class ValidatorObject implements PoolObject {
     }
 
     public boolean isValid() {
-        return errors.isEmpty();
+        if (!this.valid) {
+            return false;
+        } else {
+            return this.errors.isEmpty();
+        }
+    }
+
+    public void setInvalid() {
+        this.valid = false;
     }
 
     public String getMessage() {
@@ -57,7 +67,8 @@ public class ValidatorObject implements PoolObject {
 
     @Override
     public void clear() {
-        errors.clear();
-        warnings.clear();
+        this.valid = true;
+        this.errors.clear();
+        this.warnings.clear();
     }
 }

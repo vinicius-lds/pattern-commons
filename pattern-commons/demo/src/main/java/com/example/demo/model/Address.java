@@ -5,13 +5,13 @@ public class Address {
     private String streetName;
     private int houseNumber;
     private String neighborhood;
-    private String state;
+    private State state;
     private String country;
 
     public Address() {
     }
 
-    public Address(String streetName, int houseNumber, String neighborhood, String state, String country) {
+    public Address(String streetName, int houseNumber, String neighborhood, State state, String country) {
         this.streetName = streetName;
         this.houseNumber = houseNumber;
         this.neighborhood = neighborhood;
@@ -43,14 +43,6 @@ public class Address {
         this.neighborhood = neighborhood;
     }
 
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
     public String getCountry() {
         return country;
     }
@@ -58,4 +50,17 @@ public class Address {
     public void setCountry(String country) {
         this.country = country;
     }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    public enum State {
+        SC, SP, PR, RS, RJ, MG
+    }
+
 }

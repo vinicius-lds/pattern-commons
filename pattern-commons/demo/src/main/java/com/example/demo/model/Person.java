@@ -9,16 +9,18 @@ public class Person {
     private String lastName;
     private LocalDate birthday;
     private Address address;
+    private AnyEnum anyEnum;
 
     public Person() {
     }
 
-    public Person(String firstName, String middleName, String lastName, LocalDate birthday, Address address) {
+    public Person(String firstName, String middleName, String lastName, LocalDate birthday, Address address, AnyEnum anyEnum) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
         this.birthday = birthday;
         this.address = address;
+        this.anyEnum = anyEnum;
     }
 
     public String getFirstName() {
@@ -59,5 +61,17 @@ public class Person {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public AnyEnum getAnyEnum() {
+        return anyEnum;
+    }
+
+    public void setAnyEnum(AnyEnum anyEnum) {
+        this.anyEnum = anyEnum;
+    }
+
+    public enum AnyEnum {
+        ANY_VALUE, ANY_OTHER_VALUE
     }
 }

@@ -1,9 +1,7 @@
 package br.com.patterncommons.concretes;
 
 import br.com.patterncommons.interfaces.PoolObject;
-import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -18,7 +16,7 @@ import java.util.function.Supplier;
  */
 public final class ObjectPool<T extends PoolObject> {
 
-    private List<T> pool = Collections.synchronizedList(new LinkedList<>());
+    private List<T> pool;
     private Supplier<T> poolObjectSupplier;
 
     /**
@@ -27,6 +25,7 @@ public final class ObjectPool<T extends PoolObject> {
      * @param poolObjectSupplier supplier that returns a new object to be put into the pool
      */
     public ObjectPool(Supplier<T> poolObjectSupplier) {
+        this.pool = new LinkedList<>();
         setPoolObjectSupplier(poolObjectSupplier);
     }
 
@@ -62,7 +61,7 @@ public final class ObjectPool<T extends PoolObject> {
      * @param <E>      Type of the return value of the function provided
      * @return return value from the function provided
      */
-    public <E> E with(Function<T, E> function) {
+    public <E> E getWith(Function<T, E> function) {
         var object = acquire();
         var result = function.apply(object);
         object.clear();
@@ -76,10 +75,12 @@ public final class ObjectPool<T extends PoolObject> {
      * @return object from the pool
      */
     private synchronized T acquire() {
-        if (pool.isEmpty()) {
-            pool.add(poolObjectSupplier.get());
+        if (this.pool.isEmpty()) {
+            this.pool.add(this.poolObjectSupplier.get());
         }
-        return pool.get(0);
+        var result = this.pool.get(0);
+        this.pool.remove(0);
+        return result;
     }
 
     /**
@@ -87,8 +88,8 @@ public final class ObjectPool<T extends PoolObject> {
      *
      * @param object object beeing put into the pool
      */
-    private void release(T object) {
-        pool.add(object);
+    private synchronized void release(T object) {
+        this.pool.add(object);
     }
 
 }

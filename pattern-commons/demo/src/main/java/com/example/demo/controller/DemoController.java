@@ -21,6 +21,8 @@ public class DemoController {
         var person = new Person();
         var address = new Address();
 
+        person.setAnyEnum(Person.AnyEnum.ANY_OTHER_VALUE);
+
         employee.setPerson(person);
         person.setAddress(address);
 
