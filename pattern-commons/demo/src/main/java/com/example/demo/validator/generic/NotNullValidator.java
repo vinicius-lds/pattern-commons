@@ -21,7 +21,7 @@ public class NotNullValidator extends GenericValidator<Object> {
     public void initialize() {
         personValidator.addGenericValidator(this)
                 .using(Person::getBirthday)
-
+                .acceptOnNullPointer()
                 .addingFailMessage((person, birthday, validatorObjectCustom) -> validatorObjectCustom.addErrorMessage("Birthday não pode ser nulo."));
     }
 

@@ -32,14 +32,17 @@ public class NotBlankValidator extends GenericValidator<String> {
     public void initialize() {
         employeeValidator.addGenericValidator(this)
                 .using(Employee::getEmployeeId)
+                .acceptOnNullPointer()
                 .addingFailMessage((employee, employeeId, validatorObjectCustom) -> validatorObjectCustom.addErrorMessage("EmployeeId não pode estar em branco."));
 
         personValidator.addGenericValidator(this)
                 .using(Person::getFirstName)
+                .acceptOnNullPointer()
                 .addingFailMessage((employee, firstName, validatorObjectCustom) -> validatorObjectCustom.addErrorMessage("FirstName não pode estar em branco."));
 
         addressValidator.addGenericValidator(this)
                 .using(Address::getStreetName)
+                .acceptOnNullPointer()
                 .addingFailMessage((employee, streetName, validatorObjectCustom) -> validatorObjectCustom.addErrorMessage("StreetName não poder estar em branco."));
 
     }

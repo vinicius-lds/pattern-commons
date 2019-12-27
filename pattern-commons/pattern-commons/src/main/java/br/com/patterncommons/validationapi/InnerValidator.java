@@ -4,37 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class InnerValidator<T, K extends ValidatorObject, U> implements EnumConditionalBehavior<T> {
+public class InnerValidator<T, K extends ValidatorObject, U> implements EnumConditionalBehavior<T>, ValueSupplierBehavior<T, U> {
 
-    private Function<T, U> innerObjectSupplier;
+    private ValueSupplier<T, U, ?> valueSupplier;
     private Validator<U, K> innerValidator;
-    private NullArgumentOnSupplierFunctionRule nullArgumentOnSupplierFunctionRule;
     private List<EnumConditional<T, ? extends EnumConditionalBehavior<T>>> enumConditionals;
 
     InnerValidator(Validator<U, K> validator) {
-        this.nullArgumentOnSupplierFunctionRule = NullArgumentOnSupplierFunctionRule.ACCEPT;
         this.innerValidator = validator;
     }
 
-    public InnerValidator<T, K, U> failOnNullArgumentOnSupplierFunction() {
-        this.nullArgumentOnSupplierFunctionRule = NullArgumentOnSupplierFunctionRule.FAIL;
-        return this;
-    }
-
-    public InnerValidator<T, K, U> using(Function<T, U> innerObjectSupplier) {
-        this.innerObjectSupplier = innerObjectSupplier;
-        return this;
+    public ValueSupplier<T, U, InnerValidator<T, K, U>> using(Function<T, U> innerObjectSupplier) {
+        return new ValueSupplier<>(innerObjectSupplier, this);
     }
 
     public boolean validateInnerObjectFrom(T object, K validatorObject) {
-        if (object == null) {
-            return this.nullArgumentOnSupplierFunctionRule == NullArgumentOnSupplierFunctionRule.ACCEPT;
+        if (this.enumConditionals == null || this.enumConditionals.stream().allMatch(enumConditional -> enumConditional.hasValidEnum(object))) {
+            return this.valueSupplier
+                    .getAndValidateOrIfInvalid(
+                            object,
+                            suppliedValue -> innerValidator.validate(suppliedValue, validatorObject),
+                            validatorObject::setInvalid
+                    );
         } else {
-            if (this.enumConditionals == null || this.enumConditionals.stream().allMatch(enumConditional -> enumConditional.hasValidEnum(object))) {
-                return this.innerValidator.validate(this.innerObjectSupplier.apply(object), validatorObject);
-            } else {
-                return true;
-            }
+            return true;
         }
     }
 
@@ -48,5 +41,10 @@ public class InnerValidator<T, K extends ValidatorObject, U> implements EnumCond
             this.enumConditionals = new ArrayList<>(1);
         }
         this.enumConditionals.add(enumConditional);
+    }
+
+    @Override
+    public void setValueSupplier(ValueSupplier<T, U, ?> valueSupplier) {
+        this.valueSupplier = valueSupplier;
     }
 }

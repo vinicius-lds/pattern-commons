@@ -7,7 +7,7 @@ import java.util.function.Function;
 
 public class EnumConditional<T, P extends EnumConditionalBehavior> {
     private Function<T, ? extends Enum> enumProvider;
-    private List<Enum> acceptedEnums;
+    private List<Enum> providedEnums;
     private P caller;
     private boolean notIn;
 
@@ -18,11 +18,11 @@ public class EnumConditional<T, P extends EnumConditionalBehavior> {
     }
 
     public P in(Enum enumeration, Enum... enumerations) {
-        if (this.acceptedEnums == null) {
-            this.acceptedEnums = new ArrayList<>(enumerations.length + 1);
+        if (this.providedEnums == null) {
+            this.providedEnums = new ArrayList<>(enumerations.length + 1);
         }
-        this.acceptedEnums.add(enumeration);
-        this.acceptedEnums.addAll(Arrays.asList(enumerations));
+        this.providedEnums.add(enumeration);
+        this.providedEnums.addAll(Arrays.asList(enumerations));
         this.caller.addEnumConditional(this);
         return this.caller;
     }
@@ -35,9 +35,9 @@ public class EnumConditional<T, P extends EnumConditionalBehavior> {
 
     boolean hasValidEnum(T object) {
         if (this.notIn) {
-            return !this.acceptedEnums.contains(this.enumProvider.apply(object));
+            return !this.providedEnums.contains(this.enumProvider.apply(object));
         } else {
-            return this.acceptedEnums.contains(this.enumProvider.apply(object));
+            return this.providedEnums.contains(this.enumProvider.apply(object));
         }
     }
 

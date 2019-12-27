@@ -5,14 +5,16 @@ public class Employee {
     private Person person;
     private String employeeId;
     private String validationMessage;
+    private SubscriptionType subscriptionType;
 
     public Employee() {
     }
 
-    public Employee(Person person, String employeeId, String validationMessage) {
+    public Employee(Person person, String employeeId, String validationMessage, SubscriptionType subscriptionType) {
         this.person = person;
         this.employeeId = employeeId;
         this.validationMessage = validationMessage;
+        this.subscriptionType = subscriptionType;
     }
 
     public Person getPerson() {
@@ -37,5 +39,17 @@ public class Employee {
 
     public void setValidationMessage(String validationMessage) {
         this.validationMessage = validationMessage;
+    }
+
+    public SubscriptionType getSubscriptionType() {
+        return subscriptionType;
+    }
+
+    public void setSubscriptionType(SubscriptionType subscriptionType) {
+        this.subscriptionType = subscriptionType;
+    }
+
+    public enum SubscriptionType {
+        CNPJ, CPF
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.lang.Nullable;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Class responsible for validating a Java object using a helper ValidatorObject.
@@ -21,11 +20,11 @@ public abstract class Validator<T, K extends ValidatorObject> {
     @Autowired
     protected ObjectPool<K> validatorObjectPool;
 
-    private final List<InnerGenericValidator> innerGenericValidators;
+    protected final List<InnerGenericValidator> innerGenericValidators;
 
-    private final List<InnerFieldValidator> fieldValidators;
+    protected final List<InnerFieldValidator> fieldValidators;
 
-    private final List<InnerValidator> innerValidators;
+    protected final List<InnerValidator> innerValidators;
 
     public Validator() {
         this.innerGenericValidators = new ArrayList<>();
@@ -51,14 +50,10 @@ public abstract class Validator<T, K extends ValidatorObject> {
      * @return true if the object is valid, false otherwise.
      */
     public boolean validate(@Nullable T object, @NonNull K validatorObject) {
-        var result = new AtomicBoolean(true);
-        this.innerGenericValidators
-                .forEach(innerGenericValidator -> result.set(result.get() & innerGenericValidator.validateFieldValueFromObject(object, validatorObject)));
-        this.fieldValidators
-                .forEach(fieldValidator -> result.set(result.get() & fieldValidator.validateObject(object, validatorObject)));
-        this.innerValidators
-                .forEach(innerValidator -> result.set(result.get() & innerValidator.validateInnerObjectFrom(object, validatorObject)));
-        return result.get();
+        this.innerGenericValidators.forEach(innerGenericValidator -> innerGenericValidator.validateFieldValueFromObject(object, validatorObject));
+        this.fieldValidators.forEach(fieldValidator -> fieldValidator.validateObject(object, validatorObject));
+        this.innerValidators.forEach(innerValidator -> innerValidator.validateInnerObjectFrom(object, validatorObject));
+        return validatorObject.isValid();
     }
 
     /**

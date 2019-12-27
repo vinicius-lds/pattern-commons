@@ -51,7 +51,7 @@ public class ValidatorObject implements PoolObject {
     }
 
     /**
-     * Check if the object being validated is valid or not .
+     * Check if the object being validated is valid or not.
      *
      * @return true if the object being validated is valid, otherwise returns false.
      */
@@ -61,6 +61,15 @@ public class ValidatorObject implements PoolObject {
         } else {
             return this.errors.isEmpty();
         }
+    }
+
+    /**
+     * Check if the object being validated is valid or not.
+     *
+     * @return false if the object being validated is valid, otherwise returns true.
+     */
+    public boolean isInvalid() {
+        return !this.isValid();
     }
 
     /**

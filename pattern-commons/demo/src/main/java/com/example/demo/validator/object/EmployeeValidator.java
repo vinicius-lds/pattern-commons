@@ -9,16 +9,18 @@ import org.springframework.stereotype.Component;
 public class EmployeeValidator extends Validator<Employee, ValidatorObject> {
 
     @Override
-    public void initialize() {
+    public boolean validate(Employee employee, ValidatorObject validatorObject) {
+
+        super.validate(employee, validatorObject);
+
+        employee.setValidationMessage(validatorObject.getMessage());
+
+        return validatorObject.isValid();
+
     }
 
     @Override
-    public boolean validate(Employee employee) {
-        return validatorObjectPool.getWith(validatorObject -> {
-            var result = validate(employee, validatorObject);
-            employee.setValidationMessage(validatorObject.getMessage());
-            return result;
-        });
-    }
+    protected void initialize() {
 
+    }
 }
