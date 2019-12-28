@@ -4,44 +4,28 @@ import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public class InnerGenericValidator<T, K extends ValidatorObject, U> implements EnumConditionalBehavior<T>, ValueSupplierBehavior<T, U> {
+public class InnerGenericValidator<T, K extends ValidatorObject, U, P extends InnerGenericValidatorContainer<T, K, U>> implements EnumConditionalBehavior<T> {
 
-    private GenericValidator<U> genericValidator;
-    private ValueSupplier<T, U, ?> valueSupplier;
+    private final P caller;
+    private List<GenericValidator<U>> genericValidators;
+    private List<Function<T, U>> fieldValueSupplier;
+
     private TriConsumer<T, U, K> failMessageSetter;
     private List<EnumConditional<T, ? extends EnumConditionalBehavior<T>>> enumConditionals;
+    private Action nullValueAction;
+    private BiConsumer<T, K> nullValueConsumer;
+    private Action nonReachebleAction;
+    private BiConsumer<T, K> nonReachebleConsumer;
 
-    InnerGenericValidator(GenericValidator<U> genericValidator) {
-        this.genericValidator = genericValidator;
+
+    InnerGenericValidator(P caller) {
+        this.caller = caller;
     }
 
-    public ValueSupplier<T, U, InnerGenericValidator<T, K, U>> using(Function<T, U> fieldValueSupplier) {
-        return new ValueSupplier<>(fieldValueSupplier, this);
-    }
-
-    public InnerGenericValidator<T, K, U> addingFailMessage(TriConsumer<T, U, K> failMessageSetter) {
-        this.failMessageSetter = failMessageSetter;
-        return this;
-    }
-
-    public boolean validateFieldValueFromObject(T object, K validatorObject) {
-        if ((this.enumConditionals == null || this.enumConditionals.stream().allMatch(enumConditional -> enumConditional.hasValidEnum(object)))) {
-            return this.valueSupplier.getAndValidateOrIfInvalid(object, suppliedValue -> {
-                if (!this.genericValidator.validate(suppliedValue)) {
-                    this.failMessageSetter.accept(object, suppliedValue, validatorObject);
-                    return false;
-                } else {
-                    return true;
-                }
-            }, validatorObject::setInvalid);
-        } else {
-            return true;
-        }
-    }
-
-    public EnumConditional<T, InnerGenericValidator<T, K, U>> when(Function<T, ? extends Enum> enumProvider) {
+    public EnumConditional<T, InnerGenericValidator<T, K, U, P>> when(Function<T, ? extends Enum> enumProvider) {
         return new EnumConditional<>(enumProvider, this);
     }
 
@@ -53,8 +37,69 @@ public class InnerGenericValidator<T, K extends ValidatorObject, U> implements E
         this.enumConditionals.add(enumConditional);
     }
 
-    @Override
-    public void setValueSupplier(ValueSupplier<T, U, ?> valueSupplier) {
-        this.valueSupplier = valueSupplier;
+    public InnerGenericValidator<T, K, U, P> failingNullValue(BiConsumer<T, K> nullValueConsumer) {
+        this.nullValueAction = Action.FAIL;
+        this.nullValueConsumer = nullValueConsumer;
+        return this;
     }
+
+    public InnerGenericValidator<T, K, U, P> acceptingNullValue() {
+        this.nullValueAction = Action.ACCEPT;
+        return this;
+    }
+
+    public InnerGenericValidator<T, K, U, P> failingNonReachebleValue(BiConsumer<T, K> nullValueConsumer) {
+        this.nonReachebleAction = Action.FAIL;
+        this.nonReachebleConsumer = nullValueConsumer;
+        return this;
+    }
+
+    public InnerGenericValidator<T, K, U, P> acceptingNonReachebleValue() {
+        this.nonReachebleAction = Action.ACCEPT;
+        return this;
+    }
+
+    public GenericValidation<T, K, U, P> withValidatorSuppliedBy(GenericValidator<U> genericValidator, Function<T, U> fieldValueSupplier) {
+        return new GenericValidation();
+    }
+
+    public P submitGenericValidators() {
+        this.caller.addInnerGenericValidator(this);
+        return this.caller;
+    }
+
+    public boolean validate(T object) {
+        return false;
+    }
+
+
+    private boolean isNonReachableValue(Function<T, U> supplier, T object) {
+        try {
+            supplier.apply(object);
+            return false;
+        } catch (Exception e) {
+            return true;
+        }
+    }
+
+    private boolean shouldFailNonReachable() {
+        return this.nonReachebleAction == Action.FAIL;
+    }
+
+    private boolean isNullValue(T object) {
+        return object == null;
+    }
+
+    private boolean shouldFailNullValue() {
+        return this.nullValueAction == Action.FAIL;
+    }
+
+    private boolean enumConditionalsAllowValidatorsToExecute(T object) {
+        if (this.enumConditionals == null) {
+            return true;
+        } else {
+            return this.enumConditionals.stream().allMatch(enumConditional -> enumConditional.hasValidEnum(object));
+        }
+    }
+
 }

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class InnerValidator<T, K extends ValidatorObject, U> implements EnumConditionalBehavior<T>, ValueSupplierBehavior<T, U> {
+public class InnerValidator<T, K extends ValidatorObject, U> implements EnumConditionalBehavior<T>, ValueSupplierBehavior<T, K, U> {
 
-    private ValueSupplier<T, U, ?> valueSupplier;
+    private ValueSupplier<T, K, U, ?> valueSupplier;
     private Validator<U, K> innerValidator;
     private List<EnumConditional<T, ? extends EnumConditionalBehavior<T>>> enumConditionals;
 
@@ -14,18 +14,18 @@ public class InnerValidator<T, K extends ValidatorObject, U> implements EnumCond
         this.innerValidator = validator;
     }
 
-    public ValueSupplier<T, U, InnerValidator<T, K, U>> using(Function<T, U> innerObjectSupplier) {
+    public ValueSupplier<T, K, U, InnerValidator<T, K, U>> using(Function<T, U> innerObjectSupplier) {
         return new ValueSupplier<>(innerObjectSupplier, this);
+    }
+
+    public InnerValidator<T, K, U> usingValidator(Validator<U, K> validator) {
+        this.innerValidator = validator;
+        return this;
     }
 
     public boolean validateInnerObjectFrom(T object, K validatorObject) {
         if (this.enumConditionals == null || this.enumConditionals.stream().allMatch(enumConditional -> enumConditional.hasValidEnum(object))) {
-            return this.valueSupplier
-                    .getAndValidateOrIfInvalid(
-                            object,
-                            suppliedValue -> innerValidator.validate(suppliedValue, validatorObject),
-                            validatorObject::setInvalid
-                    );
+            return this.valueSupplier.getAndValidate(object, validatorObject, suppliedValue -> innerValidator.validate(suppliedValue, validatorObject));
         } else {
             return true;
         }
@@ -44,7 +44,7 @@ public class InnerValidator<T, K extends ValidatorObject, U> implements EnumCond
     }
 
     @Override
-    public void setValueSupplier(ValueSupplier<T, U, ?> valueSupplier) {
+    public void setValueSupplier(ValueSupplier<T, K, U, ?> valueSupplier) {
         this.valueSupplier = valueSupplier;
     }
 }

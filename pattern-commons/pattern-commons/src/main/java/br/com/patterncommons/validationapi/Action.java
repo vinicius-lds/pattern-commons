@@ -1,6 +1,6 @@
 package br.com.patterncommons.validationapi;
 
-public enum SupplierFunctionNullPointerAction {
+public enum Action {
     ACCEPT,
     FAIL,
 }
