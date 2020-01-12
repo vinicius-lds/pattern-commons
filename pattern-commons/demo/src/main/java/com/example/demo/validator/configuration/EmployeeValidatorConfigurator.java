@@ -41,73 +41,102 @@ public class EmployeeValidatorConfigurator extends ValidatorConfigurator {
     public void configure() {
 
         this.employeeValidator
+                .addGenericValidators((genericValidatorDecoratorCollectionBuilder) ->
+                        genericValidatorDecoratorCollectionBuilder
+                                .when(Employee::getSubscriptionType)
+                                .in(SubscriptionType.CNPJ)
+                                .orIsNonReachable()
 
-                .failingWhenNull(validatorObject -> validatorObject.addErrorMessage("Employee não pode ser nulo."))
+                                .failingNullValue((validatorValue, validatorObject) -> validatorObject.addErrorMessage("ValidatorValue não pode ser nulo, nesse caso o subscriptionNumber."))
+                                .failingNonReachebleValue((employee, validatorObject) -> validatorObject.addErrorMessage("ValidatorValue não é alcancavel, nesse caso a chamada employee.getSubscriptionNumber() ta dando NPE."))
 
 
-                /* GenericValidators */
+                                .withGenericValidator(this.notBlankValidator, (genericValidatorDecoratorBuilder) ->
+                                        genericValidatorDecoratorBuilder
+                                                .suppliedBy(Employee::getEmployeeId)
+                                                .withFailHandler((employee, fieldValue, validatorObject) -> validatorObject.addErrorMessage("MessageType.ERROR_MESSAGE"))
+                                )
 
-                // Adiciona uma configuração de validador genérico
-                .addGenericValidators()
+                                .withGenericValidator(this.notBlankValidator, (genericValidatorDecoratorBuilder) ->
+                                        genericValidatorDecoratorBuilder
+                                                .suppliedBy(Employee::getEmployeeId)
+                                                .withFailHandler((employee, fieldValue, validatorObject) -> validatorObject.addErrorMessage("MessageType.ERROR_MESSAGE"))
+                                )
 
-                // Define que os validadores serão acionado quando o employee.getSubscriptionType() retornar CNPJ, ou quando não for possivel retornar nada, nesse caso, se o employee for nulo.
-                .when(Employee::getSubscriptionType)
-                .in(SubscriptionType.CNPJ)
-                .rejectingNonReachable()
+                                .withGenericValidator(this.notBlankValidator, (genericValidatorDecoratorBuilder) ->
+                                        genericValidatorDecoratorBuilder
+                                                .suppliedBy(Employee::getEmployeeId)
+                                                .withFailHandler((employee, fieldValue, validatorObject) -> validatorObject.addErrorMessage("MessageType.ERROR_MESSAGE"))
+                                )
 
-                // Define que ao se ter um valor nulo fornecido para o validador, será falhado a validação e se adicionada uma mensagem de erro
-                .failingNullValue((employee, validatorObject) -> validatorObject.addErrorMessage("ValidatorValue não pode ser nulo, nesse caso o subscriptionNumber."))
-                // Define que quando o valor não for alcancavel, será falhada a validação, e será adicionada uma mensagem de erro
-                .failingNonReachebleValue((employee, validatorObject) -> validatorObject.addErrorMessage("ValidatorValue não é alcancavel, nesse caso a chamada employee.getSubscriptionNumber() ta dando NPE."))
+                )
 
-                // Se define os validadores que serão chamados nessa configuração, e como devem ser buscados os valores que serão fornecido para eles
-                .withValidatorSuppliedBy(null, null)
-                .withValidatorSuppliedBy(null, null)
-                .withValidatorSuppliedBy(null, null)
-                .withValidatorSuppliedBy(null, null)
+                .addGenericValidator((genericValidatorDecoratorBuilder) ->
+                        genericValidatorDecoratorBuilder
+                                .when(Employee::getSubscriptionType)
+                                .in(SubscriptionType.CNPJ)
+                                .orIsNonReachable()
 
-                .submitGenericValidators()
+                                .failingNullValue((validatorValue, validatorObject) -> validatorObject.addErrorMessage("ValidatorValue não pode ser nulo, nesse caso o subscriptionNumber."))
+                                .failingNonReachebleValue((employee, validatorObject) -> validatorObject.addErrorMessage("ValidatorValue não é alcancavel, nesse caso a chamada employee.getSubscriptionNumber() ta dando NPE."))
 
-                /* FieldValidators */
+                                .withValidator(this.genericValidator1)
+                                .suppliedBy(Employee::getSubscriptionNumber)
+                                .withFailHandler((employee, fieldValue, validatorObject) -> validatorObject.addErrorMessage("MessageType.ERROR_MESSAGE"))
+                )
 
-                // Adiciona uma configuração de validador de campo
-                .addFieldValidators()
 
-                // Define que que os validadore serão acionados somente quando o employee.getSubscriptionType() retorna CNPJ, ou quando não for possivel retornar nada, nesse caso, se o employee for nulo.
-                .when(Employee::getSubscriptionType)
-                .in(SubscriptionType.CNPJ)
-                .orIsNonReachable()
+                .addFieldValidators((fieldValidatorsDecoratorCollectionBuilder) ->
+                        fieldValidatorsDecoratorCollectionBuilder
+                                .when(Employee::getSubscriptionType)
+                                .in(SubscriptionType.CNPJ)
+                                .orIsNonReachable()
+                                .withValidator(this.fieldValidator1)
+                                .withValidator(this.fieldValidator2)
+                                .withValidator(this.fieldValidator3)
+                )
 
-                // Define os validadores que serão acionados nessa configuração
-                .withValidator(this.fieldValidator1)
-                .withValidator(this.fieldValidator2)
-                .withValidator(this.fieldValidator3)
+                .addFieldValidators((fieldValidatorsDecorator) ->
+                        fieldValidatorsDecorator
+                                .when(Employee::getSubscriptionType)
+                                .in(SubscriptionType.CNPJ)
+                                .orIsNonReachable()
+                                .withValidator(this.fieldValidator1)
+                )
 
-                /* InnerValidators */
-                // É adiciona um novo validador, e logo depois é feita uma configuração para ele, tipo a configuração de cima
-                // Dessa forma são feitas configurações de uma forma quase recursiva
-                .addValidator(this.validator1)
-                .suppliedBy(Employee::getCostCenter)
-                .failingWhenNonReacheble((employee, validatorObject) -> validatorObject.addErrorMessage("Não foi possível retornar o costCenter do employee"))
-                .withConfiguration(validator ->
-                        validator
-                                .failingWhenNull(validatorObject -> validatorObject.addErrorMessage("Employee não pode ser nulo."))
-                                .addGenericValidators()
-                                .when(CostCenter::getCode)
-                                .in(CostCenterCode.NUM_01, CostCenterCode.NUM_02, CostCenterCode.NUM_03)
-                                .acceptingNullValue()
-                                .acceptingNonReachebleValue()
-                                .withValidatorSuppliedBy(this.genericValidator5, CostCenter::getDescription)
-                                .addFieldValidators()
-                                .withValidator(this.fieldValidator4)
-                                .addValidator(this.validator2)
-                                .suppliedBy(CostCenter::getJobPosition)
-                                .acceptingWhenNonReacheble()
-                                .withConfiguration(jobPositionValidator ->
-                                        jobPositionValidator.acceptingWhenNull()
+                .addValidators((validatorDecoratorCollectionBuilder) ->
+                        validatorDecoratorCollectionBuilder
+                                .when(Employee::getSubscriptionType)
+                                .in(SubscriptionType.CNPJ)
+                                .orIsNonReachable()
+
+                                .withValidator((validatorDecoratorBuilder) ->
+                                        validatorDecoratorBuilder
+                                                .withValidator(this.genericValidator1)
+                                                .suppliedBy(Employee::getSubscriptionNumber)
+                                )
+
+                                .withValidator((validatorDecoratorBuilder) ->
+                                        validatorDecoratorBuilder
+                                                .withValidator(this.genericValidator1)
+                                                .suppliedBy(Employee::getSubscriptionNumber)
+                                )
+
+                                .withValidator((validatorDecoratorBuilder) ->
+                                        validatorDecoratorBuilder
+                                                .withValidator(this.genericValidator1)
+                                                .suppliedBy(Employee::getSubscriptionNumber)
                                 )
                 )
 
+                .addValidator((validatorDecoratorBuilder) ->
+                        validatorDecoratorBuilder
+                                .when(Employee::getSubscriptionType)
+                                .in(SubscriptionType.CNPJ)
+                                .orIsNonReachable()
+                                .withValidator(this.genericValidator1)
+                                .suppliedBy(Employee::getSubscriptionNumber)
+                )
 
     }
 

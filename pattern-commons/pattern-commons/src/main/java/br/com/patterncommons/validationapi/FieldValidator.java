@@ -3,8 +3,6 @@ package br.com.patterncommons.validationapi;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import javax.annotation.PostConstruct;
-
 /**
  * Validate's a field inside a object.
  *
@@ -21,12 +19,5 @@ public abstract class FieldValidator<T, K extends ValidatorObject> {
      * @return true if the field validated is valid, false otherwise
      */
     public abstract boolean validate(@Nullable T object, @NonNull K validatorObject);
-
-    /**
-     * Method where the the current {@link FieldValidator<T, K>} subscribe's into {@link Validator}'s, to be used in
-     * the validation process.
-     */
-    @PostConstruct
-    public abstract void initialize();
 
 }

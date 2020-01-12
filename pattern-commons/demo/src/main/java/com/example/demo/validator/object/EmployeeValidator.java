@@ -19,8 +19,4 @@ public class EmployeeValidator extends Validator<Employee, ValidatorObject> {
 
     }
 
-    @Override
-    protected void initialize() {
-
-    }
 }

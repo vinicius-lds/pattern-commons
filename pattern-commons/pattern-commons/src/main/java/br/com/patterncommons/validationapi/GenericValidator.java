@@ -2,8 +2,6 @@ package br.com.patterncommons.validationapi;
 
 import org.springframework.lang.Nullable;
 
-import javax.annotation.PostConstruct;
-
 /**
  * Validate's a generic field value.
  *
@@ -19,11 +17,5 @@ public abstract class GenericValidator<T> {
      */
     public abstract boolean validate(@Nullable T object);
 
-    /**
-     * Method where the the current {@link GenericValidator<T>} subscribe's into {@link Validator}'s, to be used in
-     * the validation process.
-     */
-    @PostConstruct
-    public abstract void initialize();
 
 }
