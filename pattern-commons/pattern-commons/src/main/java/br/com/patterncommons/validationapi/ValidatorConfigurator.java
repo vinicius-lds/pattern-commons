@@ -1,10 +1,7 @@
 package br.com.patterncommons.validationapi;
 
-import javax.annotation.PostConstruct;
+public interface ValidatorConfigurator {
 
-public abstract class ValidatorConfigurator {
-
-    @PostConstruct
-    public abstract void configure();
+    void configure();
 
 }

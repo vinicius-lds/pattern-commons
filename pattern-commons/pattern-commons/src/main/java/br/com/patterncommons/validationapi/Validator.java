@@ -13,9 +13,11 @@ public abstract class Validator<T, K extends ValidatorObject> {
     @Autowired
     protected ObjectPool<K> validatorObjectPool;
 
-    private final List<GenericValidatorDecorator<T, K, ?>> genericValidators;
-    private final List<FieldValidatorDecorator<T, K>> fieldValidators;
-    private final List<ValidatorDecorator<T, K, ?>> validators;
+    private final List<Proxy<T, K, ?>> genericValidators;
+    private final List<Proxy<T, K, ?>> fieldValidators;
+    private final List<Proxy<T, K, ?>> validators;
+
+    private Consumer<K> nullObjectHandler;
 
     public Validator() {
         this.genericValidators = new ArrayList<>();
@@ -47,12 +49,18 @@ public abstract class Validator<T, K extends ValidatorObject> {
         return validatorObject.isValid();
     }
 
-    public Validator<T, K> addGenericValidators(Consumer<GenericValidatorDecoratorCollectionBuilder<T, K>> genericValidatorDecoratorCollectionBuilderConsumer) {
-        var genericValidatorDecoratorCollectionBuilder = new GenericValidatorDecoratorCollectionBuilder<T, K>();
-        genericValidatorDecoratorCollectionBuilderConsumer.accept(genericValidatorDecoratorCollectionBuilder);
-        var genericValidatorDecoratorCollection = genericValidatorDecoratorCollectionBuilder.build();
-        this.genericValidators.addAll(genericValidatorDecoratorCollection);
-        return this;
+    public <O> void addGenericValidators(Consumer<GenericProxy<T, K, O>> consumer) {
+        GenericProxy<T, K, O> genericProxy = new GenericProxy<>();
+        consumer.accept(genericProxy);
+        this.genericValidators.add(genericProxy);
+    }
+
+    public void addFieldValidators(Consumer<FieldProxy<T, K, T>> consumer) {
+
+    }
+
+    public void nullObjectHandler(Consumer<K> nullObjectHandler) {
+        this.nullObjectHandler = nullObjectHandler;
     }
 
 }
