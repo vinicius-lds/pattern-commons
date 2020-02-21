@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.function.Consumer;
 
+import org.springframework.util.Assert;
+
 public class CollectionUtils {
 
     public static void main(String[] args) {
@@ -29,6 +31,8 @@ public class CollectionUtils {
         private Collection<T> left;
         private Collection<T> right;
         private Collection<T> intersection;
+        private Collection<T> leftIntersection;
+        private Collection<T> rightIntersection;
         private Collection<T> outer;
 
         private Joiner(Collection<T> c1, Collection<T> c2) {
@@ -37,6 +41,8 @@ public class CollectionUtils {
             this.left = new ArrayList<>();
             this.right = new ArrayList<>();
             this.intersection = new ArrayList<>();
+            this.leftIntersection = new ArrayList<>();
+            this.rightIntersection = new ArrayList<>();
             this.outer = new ArrayList<>();
             this.process();
         }
@@ -46,14 +52,18 @@ public class CollectionUtils {
             c1.forEach(i1 -> {
                 if (h2.contains(i1)) {
                     intersection.add(i1);
+                    leftIntersection.add(i1);
+                    rightIntersection.add(i1);
                     h2.remove(i1);
                 } else {
                     left.add(i1);
+                    leftIntersection.add(i1);
                     outer.add(i1);
                 }
             });
             h2.forEach(i2 -> {
                 right.add(i2);
+                rightIntersection.add(i2);
                 outer.add(i2);
             });
         }
@@ -74,12 +84,12 @@ public class CollectionUtils {
         }
 
         public Joiner<T> leftIntersection(Consumer<Collection<T>> consumer) {
-            consumer.accept(c1);
+            consumer.accept(leftIntersection);
             return this;
         }
 
         public Joiner<T> rightIntersection(Consumer<Collection<T>> consumer) {
-            consumer.accept(c2);
+            consumer.accept(rightIntersection);
             return this;
         }
 
